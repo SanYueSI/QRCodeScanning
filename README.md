@@ -3,4 +3,4 @@
 ### 效果图
 ![图一](https://github.com/SanYueSI/QRCodeScanning/blob/main/451615271804_.pic.jpg)
 ### 效果图
-![图一](https://github.com/SanYueSI/QRCodeScanning/blob/main/451615271804_.pic.jpg)
+![图二](https://github.com/SanYueSI/QRCodeScanning/blob/main/441615271803_.pic.jpg)
