@@ -69,9 +69,16 @@ public class ScanningQRCodeActivity extends Activity implements SurfaceHolder.Ca
         surfaceView = findViewById(R.id.preview_view);
         ivFlash = findViewById(R.id.iv_flash);
         ivImage = findViewById(R.id.iv_image);
+        findViewById(R.id.iv_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        });
 
         hasSurface = false;
-        beepManager = new BeepManager(this,true);
+        beepManager = new BeepManager(this, true);
         ambientLightManager = new AmbientLightManager(this);
         cameraManager = new CameraManager(getApplication());
         viewfinderView.setCameraManager(cameraManager);
@@ -151,7 +158,6 @@ public class ScanningQRCodeActivity extends Activity implements SurfaceHolder.Ca
         }
         return super.onKeyDown(keyCode, event);
     }
-
 
 
     @Override
