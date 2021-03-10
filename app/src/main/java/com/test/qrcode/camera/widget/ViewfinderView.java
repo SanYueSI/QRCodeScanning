@@ -18,7 +18,6 @@ package com.test.qrcode.camera.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -26,7 +25,6 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -66,7 +64,6 @@ public final class ViewfinderView extends View {
     private int rightAngleLength = 50;
 
     private int linY = 0;
-    private Rect previewFrame;
     private Rect frame;
     /**
      * 扫描线上下移动
@@ -76,8 +73,6 @@ public final class ViewfinderView extends View {
      * 扫描线高度
      */
     private int linHeight = 10;
-    private int identificationAreaWidth;
-    private int identificationAreaHeight;
 
 
     // This constructor is used when the class is built from an XML resource.
@@ -120,14 +115,8 @@ public final class ViewfinderView extends View {
         }
         if (frame == null) {
             frame = cameraManager.getFramingRect();
-            identificationAreaWidth = frame.right - frame.left;
-            identificationAreaHeight = frame.bottom - frame.top;
         }
-
-        if (previewFrame == null) {
-            previewFrame = cameraManager.getFramingRectInPreview();
-        }
-        if (frame == null || previewFrame == null) {
+        if (frame == null) {
             return;
         }
         int width = canvas.getWidth();
@@ -190,19 +179,7 @@ public final class ViewfinderView extends View {
                 frame.top,
                 frame.right,
                 frame.bottom);
-        Paint a = new Paint();
-        a.setStyle(Paint.Style.STROKE);
-        a.setColor(Color.WHITE);
-        a.setStrokeWidth(1);
-//        canvas.drawRect(new RectF(   frame),a);
-        canvas.drawCircle(623,392,10,a);
-        canvas.drawCircle(192,501,10,a);
 
-    }
-
-    private int px2dip(float pxValue) {
-        final float scale = Resources.getSystem().getDisplayMetrics().density;
-        return (int) (pxValue / scale + 0.5f);
     }
 
     private float oldDist = 1f;
@@ -253,11 +230,4 @@ public final class ViewfinderView extends View {
         return (float) sqrt;
     }
 
-    public int getIdentificationAreaWidth() {
-        return identificationAreaWidth;
-    }
-
-    public int getIdentificationAreaHeight() {
-        return identificationAreaHeight;
-    }
 }
