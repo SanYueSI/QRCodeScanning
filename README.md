@@ -15,7 +15,7 @@
 * 2.使用了低分辨率 重写了CameraConfigurationUtils的findBestPreviewSizeValue方法将原本的改了下
 * 3.把CameraManager中buildLuminanceSource方法改了下
 
-#### [下载体验](https://github.com/SanYueSI/QRCodeScanning/blob/main/app-debug.apk)
+#### [下载体验](https://github.com/SanYueSI/QRCodeScanning/releases/download/v1.0.0/app-debug.apk)
 ```
    Camera.Size largestPreview = supportedPreviewSizes.get(0);//原来的代码
   Camera.Size largestPreview = supportedPreviewSizes.get(supportedPreviewSizes.size()-1);//改过的代码
