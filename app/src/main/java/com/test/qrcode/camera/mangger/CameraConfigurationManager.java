@@ -31,6 +31,8 @@ import com.test.qrcode.camera.open.CameraFacing;
 import com.test.qrcode.camera.open.OpenCamera;
 import com.test.qrcode.camera.utils.CameraConfigurationUtils;
 
+import java.lang.reflect.Method;
+
 /**
  * A class which deals with reading, parsing, and setting the camera parameters which are used to
  * configure the camera hardware.

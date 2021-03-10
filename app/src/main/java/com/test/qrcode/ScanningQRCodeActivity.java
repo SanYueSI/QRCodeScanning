@@ -4,14 +4,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -55,11 +58,15 @@ public class ScanningQRCodeActivity extends Activity implements SurfaceHolder.Ca
     private ImageView ivFlash;
     private ImageView ivImage;
     public static final int RC_CHOOSE_PHOTO = 2000;
+    //相册返回过来的图片转成bitmap在专程数组
     private byte[] datas;
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //常亮屏
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -279,5 +286,9 @@ public class ScanningQRCodeActivity extends Activity implements SurfaceHolder.Ca
     public CameraManager getCameraManager() {
         return cameraManager;
     }
+
+    private double cropWight = -1;
+    private double cropHeight = -1;
+
 
 }

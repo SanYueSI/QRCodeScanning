@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -45,7 +46,6 @@ public final class DecodeHandler extends Handler {
 
     private final WeakReference<ScanningQRCodeActivity> activity;
     private final MultiFormatReader multiFormatReader;
-    private final Map<DecodeHintType, Object> hints;
 
     private boolean running = true;
 
@@ -54,7 +54,6 @@ public final class DecodeHandler extends Handler {
         multiFormatReader = new MultiFormatReader();
         multiFormatReader.setHints(hints);
         this.activity = new WeakReference<>(activity);
-        this.hints = hints;
     }
 
     @Override
@@ -91,7 +90,7 @@ public final class DecodeHandler extends Handler {
         if (activity.get() == null) {
             throw new RuntimeException("activity 没有赋值");
         }
-
+        long start = System.currentTimeMillis();
         PlanarYUVLuminanceSource source = activity.get().getCameraManager().buildLuminanceSource(data, width, height);
         if (source != null) {
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
@@ -105,6 +104,7 @@ public final class DecodeHandler extends Handler {
         }
         Handler handler = activity.get().getHandler();
         if (rawResult != null) {
+            Log.e("DecodeHandler", "解码耗时" + (System.currentTimeMillis() - start));
             // Don't log the barcode contents for security.
             if (handler != null) {
                 Message message = Message.obtain(handler, R.id.decode_succeeded, rawResult);
@@ -121,11 +121,13 @@ public final class DecodeHandler extends Handler {
         }
     }
 
+
     private void decodeImage(byte[] data) {
         Result rawResult = null;
         if (activity.get() == null) {
             throw new RuntimeException("activity 没有赋值");
         }
+        long start = System.currentTimeMillis();
         RGBLuminanceSource source;
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
         int width = bitmap.getWidth();
@@ -143,6 +145,7 @@ public final class DecodeHandler extends Handler {
 
         Handler handler = activity.get().getHandler();
         if (rawResult != null) {
+            Log.e("DecodeHandler", "解码耗时" + (System.currentTimeMillis() - start));
             // Don't log the barcode contents for security.
             if (handler != null) {
                 Message message = Message.obtain(handler, R.id.decode_succeeded, rawResult);

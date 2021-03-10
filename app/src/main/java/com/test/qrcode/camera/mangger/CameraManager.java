@@ -17,6 +17,7 @@
 package com.test.qrcode.camera.mangger;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
@@ -43,11 +44,6 @@ import java.io.IOException;
 public final class CameraManager {
 
     private static final String TAG = CameraManager.class.getSimpleName();
-
-    private static final int MIN_FRAME_WIDTH = 270;
-    private static final int MIN_FRAME_HEIGHT = 270;
-    private static final int MAX_FRAME_WIDTH = 1200; // = 5/8 * 1920
-    private static final int MAX_FRAME_HEIGHT = (int) (MAX_FRAME_WIDTH / 1.3); // = 5/8 * 1080
 
     private final Context context;
     private final CameraConfigurationManager configManager;
@@ -210,6 +206,7 @@ public final class CameraManager {
      * far enough away to ensure the image will be in focus.
      *
      * @return The rectangle to draw on screen in window coordinates.
+     * 计算出扫描框的位置
      */
     public synchronized Rect getFramingRect() {
         if (framingRect == null) {
@@ -221,12 +218,13 @@ public final class CameraManager {
                 // Called early, before init even finished
                 return null;
             }
+            //正方形的样子
+            int width = (int) (screenResolution.x * 0.6);
+            int height = width;
 
-            int width = findDesiredDimensionInRange(screenResolution.x, MIN_FRAME_WIDTH, MAX_FRAME_WIDTH);
-            int height = findDesiredDimensionInRange(screenResolution.y, MIN_FRAME_HEIGHT, MAX_FRAME_HEIGHT);
             int leftOffset = (screenResolution.x - width) / 2;
             int topOffset = (screenResolution.y - height) / 3;
-            framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
+            framingRect = new Rect(leftOffset, topOffset, screenResolution.x - leftOffset, topOffset + height);
         }
         return framingRect;
     }
@@ -258,19 +256,11 @@ public final class CameraManager {
                 // Called early, before init even finished
                 return null;
             }
-            if (screenResolution.x < screenResolution.y) {
-                // 下面为竖屏模式
-                rect.left = framingRect.left * cameraResolution.y / screenResolution.x;
-                rect.right = framingRect.right * cameraResolution.y / screenResolution.x;
-                rect.top = framingRect.top * cameraResolution.x / screenResolution.y;
-                rect.bottom = framingRect.bottom * cameraResolution.x / screenResolution.y;
-            } else {
-                // 下面为横屏模式
-                rect.left = framingRect.left * cameraResolution.x / screenResolution.x;
-                rect.right = framingRect.right * cameraResolution.x / screenResolution.x;
-                rect.top = framingRect.top * cameraResolution.y / screenResolution.y;
-                rect.bottom = framingRect.bottom * cameraResolution.y / screenResolution.y;
-            }
+            // 下面为竖屏模式
+            rect.left = framingRect.left * cameraResolution.y / screenResolution.x;
+            rect.right = framingRect.right * cameraResolution.y / screenResolution.x;
+            rect.top = framingRect.top * cameraResolution.x / screenResolution.y;
+            rect.bottom = framingRect.bottom * cameraResolution.x / screenResolution.y;
             framingRectInPreview = rect;
         }
         return framingRectInPreview;
@@ -322,33 +312,32 @@ public final class CameraManager {
      * @param width  The width of the image.
      * @param height The height of the image.
      * @return A PlanarYUVLuminanceSource instance.
+     * 这个是zxing解码的核心代码把中间识别区域裁剪出来再去解码
      */
     public PlanarYUVLuminanceSource buildLuminanceSource(byte[] data, int width, int height) {
         Rect rect = getFramingRectInPreview();
+
         if (rect == null) {
             return null;
         }
-        // Go ahead and assume it's YUV rather than die.
-//    return new PlanarYUVLuminanceSource(data, width, height, rect.left, rect.top,
-//                                        rect.width(), rect.height(), false);
-        PlanarYUVLuminanceSource source;
-        Point point = configManager.getScreenResolution();
-        if (point.x < point.y) {
-            byte[] rotatedData = new byte[data.length];
-            int newWidth = height;
-            int newHeight = width;
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    rotatedData[x * newWidth + newWidth - 1 - y] = data[x + y * width];
-                }
-            }
-            source = new PlanarYUVLuminanceSource(rotatedData, newWidth, newHeight,
-                    rect.left, rect.top, rect.width(), rect.height(), false);
-        } else {
-            source = new PlanarYUVLuminanceSource(data, width, height,
-                    rect.left, rect.top, rect.width(), rect.height(), false);
-        }
-        return source;
+
+        //zxing原来的代码默认横屏
+        //return new PlanarYUVLuminanceSource(data, width, height,rect.left, rect.top, rect.width(), rect.height(), false);
+        //改成竖屏之后需要把裁剪的位置也反转
+        return new PlanarYUVLuminanceSource(data, width, height,
+                //横屏的底部位置减去高度算出反转的left
+                rect.bottom - rect.height(),
+                //横屏的右边位置减去宽度度算出反转的top
+                rect.right - rect.width(),
+                rect.width(),
+                rect.height(),
+                false);
+    }
+
+    private int px2dip(float pxValue) {
+        final float scale = Resources.getSystem().getDisplayMetrics().density;
+        Log.e("TAGSS", "scale" + scale);
+        return (int) (pxValue / scale + 0.5f);
     }
 
     public boolean getTorchState() {

@@ -19,7 +19,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.test.qrcode.camera.utils.FileUtil;
-import com.test.qrcode.camera.utils.ZXingUtilsTest;
+import com.test.qrcode.camera.utils.ZXingUtils;
 
 public class MainActivity extends AppCompatActivity {
     private final int REQUEST_CODE_ADDRESS = 100;
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //如果需要logo圆角的话可以对bitmap进行圆角处理或者图片用圆角图片
                 logoBmp = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-                codeBmp = ZXingUtilsTest.createQRImage(url, logoBmp);
+                codeBmp = ZXingUtils.createQRImage(url, logoBmp);
                 ((ImageView) findViewById(R.id.image)).setImageBitmap(codeBmp);
                 tvSaveCode.setVisibility(codeBmp != null ? View.VISIBLE : View.GONE);
             }

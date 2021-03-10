@@ -18,6 +18,7 @@ package com.test.qrcode.camera.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -25,6 +26,7 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -64,6 +66,18 @@ public final class ViewfinderView extends View {
     private int rightAngleLength = 50;
 
     private int linY = 0;
+    private Rect previewFrame;
+    private Rect frame;
+    /**
+     * 扫描线上下移动
+     */
+    private RectF linRectF;
+    /**
+     * 扫描线高度
+     */
+    private int linHeight = 10;
+    private int identificationAreaWidth;
+    private int identificationAreaHeight;
 
 
     // This constructor is used when the class is built from an XML resource.
@@ -95,14 +109,24 @@ public final class ViewfinderView extends View {
         this.cameraManager = cameraManager;
     }
 
+
     @SuppressLint("DrawAllocation")
     @Override
     public void onDraw(Canvas canvas) {
+
+
         if (cameraManager == null) {
             return; // not ready yet, early draw before done configuring
         }
-        Rect frame = cameraManager.getFramingRect();
-        Rect previewFrame = cameraManager.getFramingRectInPreview();
+        if (frame == null) {
+            frame = cameraManager.getFramingRect();
+            identificationAreaWidth = frame.right - frame.left;
+            identificationAreaHeight = frame.bottom - frame.top;
+        }
+
+        if (previewFrame == null) {
+            previewFrame = cameraManager.getFramingRectInPreview();
+        }
         if (frame == null || previewFrame == null) {
             return;
         }
@@ -145,19 +169,40 @@ public final class ViewfinderView extends View {
         }
         canvas.drawPath(rigBottom, rightAnglePaint);
 
-        if (linY == 0 || linY >= frame.bottom - (linPaint.getStrokeWidth() + 10)) {
+        if (linY == 0 || linY >= frame.bottom - (linPaint.getStrokeWidth() + linHeight)) {
             linY = frame.top;
         } else {
             linY += 8;
         }
         canvas.drawText("将二维码放置框内，即可开始扫描", getWidth() / 2, frame.bottom + (textPaint.getTextSize() * 2), textPaint);
-        RectF rectF = new RectF(frame.left + rightAngleLength * 2, linY, frame.right - rightAngleLength * 2, linY + 10);
-        canvas.drawOval(rectF, linPaint);
+        if (linRectF == null) {
+            linRectF = new RectF(frame.left + rightAngleLength * 2, linY, frame.right - rightAngleLength * 2, linY + linHeight);
+        } else {
+            linRectF.left = frame.left + rightAngleLength * 2;
+            linRectF.top = linY;
+            linRectF.right = frame.right - rightAngleLength * 2;
+            linRectF.bottom = linY + linHeight;
+
+        }
+        canvas.drawOval(linRectF, linPaint);
         postInvalidateDelayed(ANIMATION_DELAY,
                 frame.left,
                 frame.top,
                 frame.right,
                 frame.bottom);
+        Paint a = new Paint();
+        a.setStyle(Paint.Style.STROKE);
+        a.setColor(Color.WHITE);
+        a.setStrokeWidth(1);
+//        canvas.drawRect(new RectF(   frame),a);
+        canvas.drawCircle(623,392,10,a);
+        canvas.drawCircle(192,501,10,a);
+
+    }
+
+    private int px2dip(float pxValue) {
+        final float scale = Resources.getSystem().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
     }
 
     private float oldDist = 1f;
@@ -208,4 +253,11 @@ public final class ViewfinderView extends View {
         return (float) sqrt;
     }
 
+    public int getIdentificationAreaWidth() {
+        return identificationAreaWidth;
+    }
+
+    public int getIdentificationAreaHeight() {
+        return identificationAreaHeight;
+    }
 }

@@ -65,12 +65,8 @@ public final class DecodeThread extends Thread {
         // The prefs can't change while the thread is running, so pick them up once here.
         if (decodeFormats == null || decodeFormats.isEmpty()) {
             decodeFormats = EnumSet.noneOf(BarcodeFormat.class);
-            decodeFormats.addAll(DecodeFormatManager.PRODUCT_FORMATS);
-            decodeFormats.addAll(DecodeFormatManager.INDUSTRIAL_FORMATS);
+            //这里只保留一种格式
             decodeFormats.addAll(DecodeFormatManager.QR_CODE_FORMATS);
-            decodeFormats.addAll(DecodeFormatManager.DATA_MATRIX_FORMATS);
-//        decodeFormats.addAll(DecodeFormatManager.AZTEC_FORMATS);
-//        decodeFormats.addAll(DecodeFormatManager.PDF417_FORMATS);
         }
         hints.put(DecodeHintType.POSSIBLE_FORMATS, decodeFormats);
 

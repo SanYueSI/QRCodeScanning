@@ -292,12 +292,8 @@ public final class CameraConfigurationUtils {
             Log.i(TAG, "Supported preview sizes: " + previewSizesString);
         }
 
-        double screenAspectRatio;
-        if (screenResolution.x < screenResolution.y) { // 竖屏
-            screenAspectRatio = (double) screenResolution.y / (double) screenResolution.x;
-        } else {
-            screenAspectRatio = (double) screenResolution.x / (double) screenResolution.y;
-        }
+        double screenAspectRatio = screenResolution.x / (double) screenResolution.y;
+
         // Remove sizes that are unsuitable
         Iterator<Camera.Size> it = supportedPreviewSizes.iterator();
         while (it.hasNext()) {
@@ -319,18 +315,18 @@ public final class CameraConfigurationUtils {
                 continue;
             }
 
-//            if (maybeFlippedWidth == screenResolution.x && maybeFlippedHeight == screenResolution.y) {
-//                Point exactPoint = new Point(realWidth, realHeight);
-//                Log.i(TAG, "Found preview size exactly matching screen size: " + exactPoint);
-//                return exactPoint;
-//            }
+            if (maybeFlippedWidth == screenResolution.x && maybeFlippedHeight == screenResolution.y) {
+                Point exactPoint = new Point(realWidth, realHeight);
+                Log.i(TAG, "Found preview size exactly matching screen size: " + exactPoint);
+                return exactPoint;
+            }
         }
 
         // If no exact match, use largest preview size. This was not a great idea on older devices because
         // of the additional computation needed. We're likely to get here on newer Android 4+ devices, where
         // the CPU is much more powerful.
-        if (!supportedPreviewSizes.isEmpty()) {
-            Camera.Size largestPreview = supportedPreviewSizes.get(0);
+        if (!supportedPreviewSizes.isEmpty()) {//获取排序后的PreviewSizes的最后一个，即为分别率最小的size
+            Camera.Size largestPreview = supportedPreviewSizes.get(supportedPreviewSizes.size()-1);
             Point largestSize = new Point(largestPreview.width, largestPreview.height);
             Log.i(TAG, "Using largest suitable preview size: " + largestSize);
             return largestSize;
