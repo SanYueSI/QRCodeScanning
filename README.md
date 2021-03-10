@@ -1,9 +1,11 @@
 # QRCodeScanning
 这是一个基于zxing实现的二维码扫描以及生成二维码图片demo
-* 干掉了条形码只能二维码了【注释了CameraConfigurationManager的一行代码】
-* ```
-*  CameraConfigurationUtils.setBarcodeSceneMode(parameters)
-* ```
+* 干掉了条形码只能二维码了[ps.注释了CameraConfigurationManager的一行代码]
+```
+
+ CameraConfigurationUtils.setBarcodeSceneMode(parameters)  
+```
+ 
 * 只能竖屏扫描了不过这也符合产品口味，毕竟国内都是竖屏扫描。
 * 增加了手势缩放，双击放大/缩小。
 * 简单的封装了可以直接抄到项目里不用改啥，集成自最新的zxing库。
@@ -12,6 +14,8 @@
 * 1.优化的手段有去除其他的解码格式 只保留了DecodeFormatManager.QR_CODE_FORMATS
 * 2.使用了低分辨率 重写了CameraConfigurationUtils的findBestPreviewSizeValue方法将原本的改了下
 * 3.把CameraManager中buildLuminanceSource方法改了下
+
+#### [下载体验](https://github.com/SanYueSI/QRCodeScanning/blob/main/app-debug.apk)
 ```
    Camera.Size largestPreview = supportedPreviewSizes.get(0);//原来的代码
   Camera.Size largestPreview = supportedPreviewSizes.get(supportedPreviewSizes.size()-1);//改过的代码
