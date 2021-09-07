@@ -14,13 +14,12 @@
 * 1.优化的手段有去除其他的解码格式 只保留了DecodeFormatManager.QR_CODE_FORMATS
 * 2.使用了低分辨率 重写了CameraConfigurationUtils的findBestPreviewSizeValue方法将原本的改了下
 * 3.把CameraManager中buildLuminanceSource方法改了下
-
-#### [下载体验](https://github.com/SanYueSI/QRCodeScanning/releases/download/v1.0.0/app-debug.apk)
 ```
    Camera.Size largestPreview = supportedPreviewSizes.get(0);//原来的代码
   Camera.Size largestPreview = supportedPreviewSizes.get(supportedPreviewSizes.size()-1);//改过的代码
 
 ```
+#### [下载体验](https://github.com/SanYueSI/QRCodeScanning/releases/download/v1.0.0/app-debug.apk)
 ### 效果图
 ![图一](https://github.com/SanYueSI/QRCodeScanning/blob/main/4i4jr-q0obx.gif)
 ![图一](https://github.com/SanYueSI/QRCodeScanning/blob/main/461615362301_.pic_hd.jpg)
