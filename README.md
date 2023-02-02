@@ -25,3 +25,7 @@
 ![图一](https://github.com/SanYueSI/QRCodeScanning/blob/main/461615362301_.pic_hd.jpg)
 ![图一](https://github.com/SanYueSI/QRCodeScanning/blob/main/451615271804_.pic.jpg)
 ![图二](https://github.com/SanYueSI/QRCodeScanning/blob/main/441615271803_.pic.jpg)
+##### 2023/2/2
+* 更新了下库的版本
+* 优化了竖屏扫描画面拉伸问题
+* 新增了全屏扫描功能
