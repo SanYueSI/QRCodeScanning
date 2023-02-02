@@ -21,7 +21,21 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
+    <TextView
+        android:layout_marginTop="30dp"
+        android:id="@+id/tv_full_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="全屏扫描"
+        android:paddingTop="10dp"
+        android:textColor="#000000"
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:background="@drawable/click"
+        app:layout_constraintTop_toBottomOf="@+id/tv_code"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
     <TextView
         android:layout_marginTop="30dp"
         android:id="@+id/tv_create_code"
@@ -34,7 +48,7 @@
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:background="@drawable/click"
-        app:layout_constraintTop_toBottomOf="@+id/tv_code"
+        app:layout_constraintTop_toBottomOf="@+id/tv_full_code"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
     <ImageView

@@ -32,6 +32,7 @@ public final class CameraConfigurationUtils {
     private static final int MIN_FPS = 10;
     private static final int MAX_FPS = 20;
     private static final int AREA_PER_1000 = 400;
+    private static boolean FULL_SCANNING = false;
 
     private CameraConfigurationUtils() {
     }
@@ -425,4 +426,15 @@ public final class CameraConfigurationUtils {
         return result.toString();
     }
 
+    public static void setFullScanning(boolean flags){
+        FULL_SCANNING = flags;
+    }
+
+    /**
+     * 是否全屏扫描
+     * @return
+     */
+    public static boolean isFullScanning(){
+        return FULL_SCANNING;
+    }
 }

@@ -31,8 +31,6 @@ import com.test.qrcode.camera.open.CameraFacing;
 import com.test.qrcode.camera.open.OpenCamera;
 import com.test.qrcode.camera.utils.CameraConfigurationUtils;
 
-import java.lang.reflect.Method;
-
 /**
  * A class which deals with reading, parsing, and setting the camera parameters which are used to
  * configure the camera hardware.
@@ -111,9 +109,17 @@ public final class CameraConfigurationManager {
         display.getSize(theScreenResolution);
         screenResolution = theScreenResolution;
         Log.i(TAG, "Screen resolution in current orientation: " + screenResolution);
-        cameraResolution = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, screenResolution);
+        //修改竖屏显示，解决图形拉伸问题
+        Point p = new Point();
+        p.x = this.screenResolution.x;
+        p.y = this.screenResolution.y;
+        if (this.screenResolution.x < this.screenResolution.y) {
+            p.x = this.screenResolution.y;
+            p.y = this.screenResolution.x;
+        }
+        cameraResolution = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, p);
         Log.i(TAG, "Camera resolution: " + cameraResolution);
-        bestPreviewSize = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, screenResolution);
+        bestPreviewSize = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, p);
         Log.i(TAG, "Best available preview size: " + bestPreviewSize);
 
         boolean isScreenPortrait = screenResolution.x < screenResolution.y;
@@ -199,15 +205,15 @@ public final class CameraConfigurationManager {
         return cameraResolution;
     }
 
-    public Point getScreenResolution() {
+    public  Point getScreenResolution() {
         return screenResolution;
     }
 
-    public int getCWNeededRotation() {
+    public  int getCWNeededRotation() {
         return cwNeededRotation;
     }
 
-    public boolean getTorchState(Camera camera) {
+    boolean getTorchState(Camera camera) {
         if (camera != null) {
             Camera.Parameters parameters = camera.getParameters();
             if (parameters != null) {

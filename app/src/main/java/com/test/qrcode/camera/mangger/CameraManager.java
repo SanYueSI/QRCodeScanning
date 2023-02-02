@@ -218,13 +218,29 @@ public final class CameraManager {
                 // Called early, before init even finished
                 return null;
             }
-            //正方形的样子
-            int width = (int) (screenResolution.x * 0.6);
-            int height = width;
+            if (CameraConfigurationUtils.isFullScanning()) {
+                //全屏
+                framingRect = new Rect(0, 0, screenResolution.x, screenResolution.y);
+            } else {
+                //正方形的样子
+                if (screenResolution.x > screenResolution.y) {
+                    //横屏
+                    int width = (int) (screenResolution.y * 0.6);
+                    int height = width;
+                    int leftOffset = (screenResolution.x - width) / 2;
+                    int topOffset = (screenResolution.y - height) / 3;
+                    framingRect = new Rect(leftOffset, topOffset, screenResolution.x - leftOffset, topOffset + height);
+                } else {
+                    //竖屏
+                    int width = (int) (screenResolution.x * 0.6);
+                    int height = width;
+                    int leftOffset = (screenResolution.x - width) / 2;
+                    int topOffset = (screenResolution.y - height) / 3;
+                    framingRect = new Rect(leftOffset, topOffset, screenResolution.x - leftOffset, topOffset + height);
+                }
+            }
 
-            int leftOffset = (screenResolution.x - width) / 2;
-            int topOffset = (screenResolution.y - height) / 3;
-            framingRect = new Rect(leftOffset, topOffset, screenResolution.x - leftOffset, topOffset + height);
+
         }
         return framingRect;
     }
@@ -256,12 +272,28 @@ public final class CameraManager {
                 // Called early, before init even finished
                 return null;
             }
-            // 下面为竖屏模式
-            rect.left = framingRect.left * cameraResolution.y / screenResolution.x;
-            rect.right = framingRect.right * cameraResolution.y / screenResolution.x;
-            rect.top = framingRect.top * cameraResolution.x / screenResolution.y;
-            rect.bottom = framingRect.bottom * cameraResolution.x / screenResolution.y;
+            if (CameraConfigurationUtils.isFullScanning()) {
+                rect.left = 0;
+                rect.right = cameraResolution.x;
+                rect.top = 0;
+                rect.bottom = cameraResolution.y;
+            }else {
+                if (screenResolution.x > screenResolution.y) {
+                    //横屏
+                    rect.left = rect.left * cameraResolution.x / screenResolution.x;
+                    rect.right = rect.right * cameraResolution.x / screenResolution.x;
+                    rect.top = rect.top * cameraResolution.y / screenResolution.y;
+                    rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+                } else {
+                    //竖屏
+                    rect.left = framingRect.left * cameraResolution.y / screenResolution.x;
+                    rect.right = framingRect.right * cameraResolution.y / screenResolution.x;
+                    rect.top = framingRect.top * cameraResolution.x / screenResolution.y;
+                    rect.bottom = framingRect.bottom * cameraResolution.x / screenResolution.y;
+                }
+            }
             framingRectInPreview = rect;
+
         }
         return framingRectInPreview;
     }
@@ -320,18 +352,21 @@ public final class CameraManager {
         if (rect == null) {
             return null;
         }
-
-        //zxing原来的代码默认横屏
-        //return new PlanarYUVLuminanceSource(data, width, height,rect.left, rect.top, rect.width(), rect.height(), false);
-        //改成竖屏之后需要把裁剪的位置也反转
-        return new PlanarYUVLuminanceSource(data, width, height,
-                //横屏的底部位置减去高度算出反转的left
-                rect.bottom - rect.height(),
-                //横屏的右边位置减去宽度度算出反转的top
-                rect.right - rect.width(),
-                rect.width(),
-                rect.height(),
-                false);
+        Point screenResolution = configManager.getScreenResolution();
+        if (screenResolution.x > screenResolution.y) {
+            //zxing横屏
+            return new PlanarYUVLuminanceSource(data, width, height, rect.left, rect.top, rect.width(), rect.height(), false);
+        } else {
+            //改成竖屏之后需要把裁剪的位置也反转
+            return new PlanarYUVLuminanceSource(data, width, height,
+                    //横屏的底部位置减去高度算出反转的left
+                    rect.bottom - rect.height(),
+                    //横屏的右边位置减去宽度度算出反转的top
+                    rect.right - rect.width(),
+                    rect.width(),
+                    rect.height(),
+                    false);
+        }
     }
 
     private int px2dip(float pxValue) {

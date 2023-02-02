@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.test.qrcode.camera.utils.CameraConfigurationUtils;
 import com.test.qrcode.camera.utils.FileUtil;
 import com.test.qrcode.camera.utils.ZXingUtils;
 
@@ -62,12 +66,35 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        findViewById(R.id.tv_full_code).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < permissions.length; i++) {
+                    if (ContextCompat.checkSelfPermission(MainActivity.this, permissions[0]) != PackageManager.PERMISSION_GRANTED
+                            || ContextCompat.checkSelfPermission(MainActivity.this, permissions[1]) != PackageManager.PERMISSION_GRANTED
+                            || ContextCompat.checkSelfPermission(MainActivity.this, permissions[2]) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(MainActivity.this, permissions, REQUEST_CODE_ADDRESS);
+                    } else {
+                        Intent intent = new Intent(MainActivity.this, ScanningQRCodeActivity.class);
+                        intent.putExtra(ScanningQRCodeActivity.FULL_SCANNING,1);
+                        startActivityForResult(intent, 1000);
+                        break;
+                    }
+                }
+            }
+        });
         tvSaveCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FileUtil.saveImageToGallery(MainActivity.this,codeBmp);
             }
         });
+        Display display = getWindowManager().getDefaultDisplay();
+        Point point = new Point();
+        display.getSize(point);
+        int width = display.getWidth();
+        int height = display.getHeight();
+        Log.e("TAGSSS","width: "+width+",height:"+height );
     }
 
     @Override

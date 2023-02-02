@@ -32,6 +32,7 @@ import androidx.core.content.ContextCompat;
 
 import com.test.qrcode.R;
 import com.test.qrcode.camera.mangger.CameraManager;
+import com.test.qrcode.camera.utils.CameraConfigurationUtils;
 
 /**
  * This view is overlaid on top of the camera preview. It adds the viewfinder rectangle and partial
@@ -115,6 +116,7 @@ public final class ViewfinderView extends View {
         }
         if (frame == null) {
             frame = cameraManager.getFramingRect();
+            linY = frame.top;
         }
         if (frame == null) {
             return;
@@ -124,11 +126,14 @@ public final class ViewfinderView extends View {
 
         // Draw the exterior (i.e. outside the framing rect) darkened
         paint.setColor(maskColor);
-        canvas.drawRect(0, 0, width, frame.top, paint);
-        canvas.drawRect(0, frame.top, frame.left, frame.bottom + 1, paint);
-        canvas.drawRect(frame.right + 1, frame.top, width, frame.bottom + 1, paint);
-        canvas.drawRect(0, frame.bottom + 1, width, height, paint);
+        //灰色蒙层
+        if(!CameraConfigurationUtils.isFullScanning()){
+            canvas.drawRect(0, 0, width, frame.top, paint);
+            canvas.drawRect(0, frame.top, frame.left, frame.bottom + 1, paint);
+            canvas.drawRect(frame.right + 1, frame.top, width, frame.bottom + 1, paint);
+            canvas.drawRect(0, frame.bottom + 1, width, height, paint);
 
+      //  直角线
         if (leftTop == null) {
             leftTop = new Path();
             leftTop.moveTo(frame.left - rightAnglePaint.getStrokeWidth() / 2, frame.top + rightAngleLength - rightAnglePaint.getStrokeWidth() / 2);
@@ -157,13 +162,14 @@ public final class ViewfinderView extends View {
             rigBottom.lineTo(frame.right + rightAnglePaint.getStrokeWidth() / 2, frame.bottom - rightAngleLength + rightAnglePaint.getStrokeWidth() / 2);
         }
         canvas.drawPath(rigBottom, rightAnglePaint);
-
-        if (linY == 0 || linY >= frame.bottom - (linPaint.getStrokeWidth() + linHeight)) {
+        canvas.drawText("将二维码放置框内，即可开始扫描", getWidth() / 2, frame.bottom + (textPaint.getTextSize() * 2), textPaint);
+        }
+        //扫描线条
+        if (linY+linHeight >= frame.bottom) {
             linY = frame.top;
         } else {
             linY += 8;
         }
-        canvas.drawText("将二维码放置框内，即可开始扫描", getWidth() / 2, frame.bottom + (textPaint.getTextSize() * 2), textPaint);
         if (linRectF == null) {
             linRectF = new RectF(frame.left + rightAngleLength * 2, linY, frame.right - rightAngleLength * 2, linY + linHeight);
         } else {

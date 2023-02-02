@@ -31,6 +31,7 @@ import com.test.qrcode.camera.handler.ScanningQRCodeHandler;
 import com.test.qrcode.camera.mangger.AmbientLightManager;
 import com.test.qrcode.camera.mangger.BeepManager;
 import com.test.qrcode.camera.mangger.CameraManager;
+import com.test.qrcode.camera.utils.CameraConfigurationUtils;
 import com.test.qrcode.camera.widget.ViewfinderView;
 
 import java.io.ByteArrayOutputStream;
@@ -60,6 +61,7 @@ public class ScanningQRCodeActivity extends Activity implements SurfaceHolder.Ca
     public static final int RC_CHOOSE_PHOTO = 2000;
     //相册返回过来的图片转成bitmap在专程数组
     private byte[] datas;
+    public static final String FULL_SCANNING = "FULL_SCANNING";
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -75,6 +77,8 @@ public class ScanningQRCodeActivity extends Activity implements SurfaceHolder.Ca
         viewfinderView = findViewById(R.id.viewfinder_view);
         surfaceView = findViewById(R.id.preview_view);
         ivFlash = findViewById(R.id.iv_flash);
+        int flag =getIntent().getIntExtra(FULL_SCANNING,0);
+        CameraConfigurationUtils.setFullScanning(flag>0);
         ivImage = findViewById(R.id.iv_image);
         findViewById(R.id.iv_close).setOnClickListener(new View.OnClickListener() {
             @Override
